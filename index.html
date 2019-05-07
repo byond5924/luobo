@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>无标题文档</title>
+		<style>
+			* {
+				padding: 0;
+				margin: 0;
+			}
+			
+			.banner {
+				position: relative;
+				width: 810px;
+				height: 320px;
+				margin: 50px auto;
+				background: grey;
+				overflow: hidden;
+			}
+			
+			.img-list {
+				list-style: none;
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 7240px;
+				height: 320px;
+			}
+			
+			.img-list li {
+				float: left;
+			}
+			
+			.banner-nav-list {
+				list-style: none;
+				position: absolute;
+				right: 100px;
+				bottom: 50px;
+			}
+			
+			.banner-nav-list li {
+				background: red;
+				float: left;
+				width: 20px;
+				height: 20px;
+				margin-right: 10px;
+				cursor: pointer;
+				text-align: center;
+			}
+			
+			.banner-nav-list li.active {
+				background: yellow;
+			}
+			
+			.banner .toLeft {
+				width: 60px;
+				height: 60px;
+				background: url(images/btn.gif);
+				position: absolute;
+				left: 30px;
+				top: 120px;
+				/*opacity: 0;*/
+			}
+			
+			.banner .toRight {
+				width: 60px;
+				height: 60px;
+				background: url(images/btn.gif) 0px 60px;
+				position: absolute;
+				right: 30px;
+				top: 120px;
+				/*opacity: 0;*/
+			}
+			
+			#arrow {
+				opacity: 0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="banner" id="banner">
+			<ul class="img-list" id="img-list">
+				<li index="0"><img src="images/001.jpg"></li>
+				<li index="1"><img src="images/002.jpg"></li>
+				<li index="2"><img src="images/003.jpg"></li>
+				<li index="3"><img src="images/004.jpg"></li>
+				<li index="4"><img src="images/003.jpg"></li>
+				<li index="5"><img src="images/004.jpg"></li>
+				<li index="0"><img src="images/001.jpg"></li>
+			</ul>
+
+			<ul class="banner-nav-list" id="banner-nav-list">
+				<li class="active">1</li>
+				<li>2</li>
+				<li>3</li>
+				<li>4</li>
+				<li>5</li>
+				<li>6</li>
+			</ul>
+			<div id="arrow">
+				<div class="toLeft" id="toLeft"></div>
+				<div class="toRight" id="toRight"></div>
+			</div>
+		</div>
+	</body>
+	<script src="../../../二阶段/public/public.js"></script>
+	<script type="text/javascript">
+		//自动轮播
+		//imgList的Left往左动，
+		//1秒动一次
+		var imgList = document.getElementById("img-list");
+		var arr = imgList.children;
+		
+		var banner = document.getElementById("banner");
+		var bannerList = document.getElementById("banner-nav-list");
+		var brr = bannerList.children;
+		var arrow = document.getElementById("arrow");
+		var toLeft = document.getElementById("toLeft");
+		var toRight = document.getElementById("toRight");
+		var index = 0;
+		var timer = setInterval(function(){
+			
+			if(index == arr.length-1){
+				index = 1;
+				imgList.style.left = 0;
+			}else{
+				index++;
+			}
+			//imgList.style.left = -index * banner.offsetWidth + "px";
+			for(var i = 0;i < brr.length;i++){
+				brr[i].className = "";
+			}
+		
+			animate(imgList,{left:-index * 810});
+			brr[index == arr.length-1 ? 0 : index].className = "active";
+			
+			
+		},1000);
+		banner.onmouseenter = function(){
+			animate(arrow,{opacity:100});
+			clearInterval(timer);	
+			toLeft.onclick = function(){
+				
+				if(index == arr.length-1){
+					//clearInterval(timer);
+					index = 0;
+					imgList.style.left = 0;
+				}else if(index == 0){
+					index = 0;
+					
+				}else{
+					index--;
+				}
+				for(var i = 0;i < brr.length;i++){
+					brr[i].className = "";
+				}
+			
+				animate(imgList,{left:-index * 810});
+				brr[index == arr.length-1 ? 0 : index].className = "active";
+			};
+			toRight.onclick = function(){
+				if(index == arr.length-1){
+					index = 1;
+					// imgList.style.left = 0;
+				}else if(index == arr.length-2){
+					index = arr.length-2;
+				}else{
+					index++;
+				};
+				for(var i = 0;i < brr.length;i++){
+				brr[i].className = "";
+				}
+		
+				animate(imgList,{left:-index * 810});
+				brr[index == arr.length-1 ? 0 : index].className = "active";
+			};
+			
+		};
+		
+		banner.onmouseleave = function(){
+			animate(arrow,{opacity:0});
+			 timer = setInterval(function(){
+			
+			if(index == arr.length-1){
+				index = 1;
+				imgList.style.left = 0;
+			}else{
+				index++;
+			}
+			for(var i = 0;i < brr.length;i++){
+				brr[i].className = "";
+			}
+			animate(imgList,{left:-index * 810});
+			brr[index == arr.length-1 ? 0 : index].className = "active";
+			
+		},1000);
+		};
+		for(var i = 0;i < brr.length;i++){
+				brr[i].num = i;
+				brr[index].className = "";
+			};
+			bannerList.onclick = function(e){
+				for(var i = 0;i < brr.length;i++){
+					brr[index].className = "";
+				};
+				var e = e || event;
+				var target = e.target || e.srcElement;
+				index = e.target.num;
+				
+				brr[index].className = "active";
+				if(e.target.nodeName == "LI"){
+					animate(imgList,{left:-index * 810});
+				}
+			}
+	</script>
+
+</html>
